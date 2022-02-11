@@ -1,9 +1,19 @@
 import praw  
 import re
+import os
 from time import sleep
+from dotenv import load_dotenv  # import dotenv to get environment variables from .env file
+load_dotenv()
 
-# Create reddit instance using the credentials in the praw.ini
-reddit = praw.Reddit('bot1') 
+if os.path.isfile('./praw.ini'): 
+    # Create reddit instance using the credentials in the praw.ini
+    reddit = praw.Reddit('bot1') 
+else:
+    reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),  
+                            client_secret=os.environ.get("REDDIT_CLIENT_SECRET"),  
+                            username=os.environ.get("REDDIT_USERNAME"),  
+                            password=os.environ.get("REDDIT_PASSWORD"), 
+                            user_agent=os.environ.get("REDDIT_USER_AGENT")) 
 
 subreddit = reddit.subreddit('TCGBotTest937') 
 
