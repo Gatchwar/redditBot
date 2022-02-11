@@ -8,9 +8,13 @@ reddit = praw.Reddit('bot1')
 subreddit = reddit.subreddit('TCGBotTest937') 
 
 ids = []
-with open('done.txt', 'r') as f:
-    for i in f:
-        ids.append(i.replace("\n", ""))
+
+try:
+    with open('done.txt', 'r') as f:
+        for i in f:
+            ids.append(i.replace("\n", ""))
+except FileNotFoundError:
+    print("No done.txt file to read from")
 
 def reply():
     current_ids = []
