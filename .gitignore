@@ -1,3 +1,4 @@
 praw.ini
-
 .vscode
+.env
+done.txt
