@@ -19,18 +19,18 @@ subreddit = reddit.subreddit('TCGBotTest937')
 
 ids = []
 
-try:
-    with open('done.txt', 'r') as f:
-        for i in f:
-            ids.append(i.replace("\n", ""))
-except FileNotFoundError:
-    print("No done.txt file to read from")
+# try:
+#     with open('done.txt', 'r') as f:
+#         for i in f:
+#             ids.append(i.replace("\n", ""))
+# except FileNotFoundError:
+#     print("No done.txt file to read from")
 
 def reply():
     current_ids = []
     sub_comments = subreddit.comments()
     for comment in sub_comments:
-        current_ids.append(comment.id)
+        # current_ids.append(comment.id)
         if comment.id not in ids:
             cards = re.findall("{([^\[\]]*)}", comment.body)
             reply = ""
@@ -46,8 +46,7 @@ def reply():
 
 while True:
     new_ids = reply()
-    with open("done.txt", "w") as f:
-        for i in new_ids:
-            f.write(str(i) + '\n')
-    print("sleeping")
+    # with open("done.txt", "w") as f:
+    #     for i in new_ids:
+    #         f.write(str(i) + '\n')
     sleep(60)
