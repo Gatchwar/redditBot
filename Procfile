@@ -1,1 +1,1 @@
-web: python replybot.py
+worker: python replybot.py
