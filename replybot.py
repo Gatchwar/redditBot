@@ -17,36 +17,21 @@ else:
 
 subreddit = reddit.subreddit('TCGBotTest937') 
 
-ids = []
-
-# try:
-#     with open('done.txt', 'r') as f:
-#         for i in f:
-#             ids.append(i.replace("\n", ""))
-# except FileNotFoundError:
-#     print("No done.txt file to read from")
-
 def reply():
-    current_ids = []
-    sub_comments = subreddit.comments()
+    sub_comments = subreddit.stream.comments(skip_existing=True)
     for comment in sub_comments:
-        # current_ids.append(comment.id)
-        if comment.id not in ids:
-            cards = re.findall("{([^\[\]]*)}", comment.body)
-            reply = ""
-            for i in set(cards):
-                reply += "[" + i + "](https://yugioh.fandom.com/wiki/" + '_'.join(i.split()) + ")"
-            if reply:
-                try:
-                    comment.reply(reply)
-                except Exception as err: 
-                    print(str(err))
-            ids.append(comment.id)
-    return current_ids
+        cards = re.findall("{([^\[\]]*?)}", comment.body)
+        reply = ""
+        for i in set(cards):
+            card_name = [word.capitalize() for word in i.split()]
+            reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
+        if reply:
+            try:
+                comment.reply(reply)
+            except Exception as err: 
+                print(str(err))
+    return
 
 while True:
-    new_ids = reply()
-    # with open("done.txt", "w") as f:
-    #     for i in new_ids:
-    #         f.write(str(i) + '\n')
-    sleep(60)
+    reply()
+    sleep(20)
