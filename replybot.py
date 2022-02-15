@@ -43,10 +43,14 @@ def main():
                 closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
                 if closest:
                     card_name = closest[0].split()
-                    reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
+                    reply += "[" + ' '.join(card_name) + "](http://yugiohprices.com/api/card_image/" + '+'.join(card_name) + ")"
+                    reply += ' - '
+                    reply += "[(wiki)](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ") "
+                    reply += "[($)](http://yugiohprices.com/card_price?name=" + '+'.join(card_name) + ")"
+                    reply += '\n\n'
             if reply:  # only reply when any card names are found
                 try:
-                    reply += '{CARDNAME} to invoke a card'
+                    reply += '^^{CARDNAME} ^^to ^^invoke ^^a ^^card'
                     comment.reply(reply)
                 except Exception as err: 
                     print(str(err))
@@ -62,10 +66,14 @@ def main():
                 closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
                 if closest:
                     card_name = closest[0].split()
-                    reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
+                    reply += "[" + ' '.join(card_name) + "](http://yugiohprices.com/api/card_image/" + '+'.join(card_name) + ")"
+                    reply += ' - '
+                    reply += "[(wiki)](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ") "
+                    reply += "[($)](http://yugiohprices.com/card_price?name=" + '+'.join(card_name) + ")"
+                    reply += '\n\n'
             if reply:
                 try:
-                    reply += '{CARDNAME} to invoke a card'
+                    reply += '^^{CARDNAME} ^^to ^^invoke ^^a ^^card'
                     submission.reply(reply)
                 except Exception as err: 
                     print(str(err))
