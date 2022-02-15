@@ -28,7 +28,12 @@ def main():
     new_submissions = subreddit.stream.submissions(skip_existing=True, pause_after=-1)
     while True:
         for comment in new_comments:
-            if comment is None or comment.author == username:
+            #If the post has been deleted, getting the author will return an error
+            try:
+                author = comment.author.name
+            except Exception:
+                break
+            if comment is None or author == username:
                 break
             cards = re.findall("{([^\[\]]*?)}", comment.body)
             reply = ""
