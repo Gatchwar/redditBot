@@ -4,15 +4,13 @@ import os
 from dotenv import load_dotenv  # import dotenv to get environment variables from .env file
 load_dotenv()
 
-if os.path.isfile('./praw.ini'): 
-    # Create reddit instance using the credentials in the praw.ini
-    reddit = praw.Reddit('bot1') 
-else:
-    reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),  
-                            client_secret=os.environ.get("REDDIT_CLIENT_SECRET"),  
-                            username=os.environ.get("REDDIT_USERNAME"),  
-                            password=os.environ.get("REDDIT_PASSWORD"), 
-                            user_agent=os.environ.get("REDDIT_USER_AGENT")) 
+username = os.environ.get("REDDIT_USERNAME")
+
+reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),  
+                        client_secret=os.environ.get("REDDIT_CLIENT_SECRET"),  
+                        username=username,  
+                        password=os.environ.get("REDDIT_PASSWORD"), 
+                        user_agent=os.environ.get("REDDIT_USER_AGENT")) 
 
 subreddit = reddit.subreddit('TCGBotTest937+test') 
 
@@ -24,7 +22,7 @@ def main():
     new_submissions = subreddit.stream.submissions(skip_existing=True, pause_after=-1)
     while True:
         for comment in new_comments:
-            if comment is None:
+            if comment is None or comment.author == username:
                 break
             cards = re.findall("{([^\[\]]*?)}", comment.body)
             reply = ""
@@ -34,6 +32,7 @@ def main():
                 reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
             if reply:  # only reply when any card names are found
                 try:
+                    reply += 'Comment with {CARDNAME} to invoke a card, this is a bot'
                     comment.reply(reply)
                 except Exception as err: 
                     print(str(err))
