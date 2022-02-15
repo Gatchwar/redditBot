@@ -1,6 +1,9 @@
 import praw  
 import re
 import os
+import json
+import requests
+from difflib import get_close_matches
 from dotenv import load_dotenv  # import dotenv to get environment variables from .env file
 load_dotenv()
 
@@ -13,6 +16,9 @@ reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),
                         user_agent=os.environ.get("REDDIT_USER_AGENT")) 
 
 subreddit = reddit.subreddit('TCGBotTest937+test') 
+
+req = requests.get("http://yugiohprices.com/api/card_names")
+card_names_list = json.loads(json.dumps(req.json())) # get every card name and put into a list
 
 def main():
     # subreddit.stream yields new comments/submissions as they are created
@@ -28,11 +34,14 @@ def main():
             reply = ""
             for i in set(cards):  # cast cards to set to remove duplicates
                 print(i)
-                card_name = [word.capitalize() for word in i.split()]
-                reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
+                card_input = ' '.join([word.capitalize() for word in i.split()]) # capitalize first letter of each word to make matching easier
+                closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
+                if closest:
+                    card_name = closest[0].split()
+                    reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
             if reply:  # only reply when any card names are found
                 try:
-                    reply += 'Comment with {CARDNAME} to invoke a card, this is a bot'
+                    reply += '{CARDNAME} to invoke a card'
                     comment.reply(reply)
                 except Exception as err: 
                     print(str(err))
@@ -44,10 +53,14 @@ def main():
             reply = ""
             for i in set(cards):
                 print(i)
-                card_name = [word.capitalize() for word in i.split()]
-                reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
+                card_input = ' '.join([word.capitalize() for word in i.split()]) # capitalize first letter of each word to make matching easier
+                closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
+                if closest:
+                    card_name = closest[0].split()
+                    reply += "[" + ' '.join(card_name) + "](https://yugioh.fandom.com/wiki/" + '_'.join(card_name) + ")\n\n"
             if reply:
                 try:
+                    reply += '{CARDNAME} to invoke a card'
                     submission.reply(reply)
                 except Exception as err: 
                     print(str(err))
