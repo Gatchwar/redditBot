@@ -15,7 +15,7 @@ reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),
                         password=os.environ.get("REDDIT_PASSWORD"), 
                         user_agent=os.environ.get("REDDIT_USER_AGENT")) 
 
-subreddit = reddit.subreddit('TCGBotTest937+test') 
+subreddit = reddit.subreddit(os.environ.get("REDDIT_SUBREDDITS")) # Fetch subreddit instances from .env
 
 req = requests.get("http://yugiohprices.com/api/card_names")
 card_names_list = json.loads(json.dumps(req.json())) # get every card name and put into a list
@@ -28,14 +28,14 @@ def main():
     new_submissions = subreddit.stream.submissions(skip_existing=True, pause_after=-1)
     while True:
         for comment in new_comments:
-            #If the post has been deleted, getting the author will return an error
+            #If the post has been deleted, getting the author will return an error, use a try/except to avoid crashing
             try:
                 author = comment.author.name
             except Exception:
                 break
-            if comment is None or author == username:
+            if comment is None or author == username:  # do not self-reply
                 break
-            cards = re.findall("{([^\[\]]*?)}", comment.body)
+            cards = re.findall("{([^\[\]]*?)}", comment.body)  # Regex to find all instances of {CARDNAME}
             reply = ""
             for i in set(cards):  # cast cards to set to remove duplicates
                 print(i)
