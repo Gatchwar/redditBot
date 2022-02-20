@@ -1,1 +1,1 @@
-worker: python replybot.py
+worker: bash starter.sh
