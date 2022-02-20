@@ -1,6 +1,6 @@
 #!/bin/bash
 
-until python magictcg_bot.py; do
+until python replybot.py; do
 	echo "CRASH" >&2
 	sleep 1
 done
