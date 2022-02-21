@@ -7,8 +7,8 @@ from difflib import get_close_matches
 from dotenv import load_dotenv  # import dotenv to get environment variables from .env file
 load_dotenv()
 
-REGEX = '(?<=(?<!\{)\{)([^{}]*)(?=\}(?!\}))'
-LONG_REGEX = '{{([^\[\]]*?)}}'
+REGEX = '(?<=(?<!\{)\{)([^{}]*)(?=\}(?!\}))'  # Matches {CARDNAME} but not {{CARDNAME}}
+LONG_REGEX = '{{([^\[\]]*?)}}'  # Matches {{CARDNAME}}
 ABOUT_BOT = '^^{CARDNAME} ^^to ^^invoke ^^a ^^card, ^^{{CARDNAME}} ^^to ^^also ^^get ^^information'
 BASE_URL = 'http://yugiohprices.com/'
 WIKI_URL = 'https://yugioh.fandom.com/wiki/'
@@ -22,11 +22,13 @@ reddit = praw.Reddit(client_id=os.environ.get("REDDIT_CLIENT_ID"),
                         password=os.environ.get("REDDIT_PASSWORD"), 
                         user_agent=os.environ.get("REDDIT_USER_AGENT")) 
 
-subreddit = reddit.subreddit(os.environ.get("REDDIT_SUBREDDITS")) # Fetch subreddit instances from .env
+subreddit = reddit.subreddit(os.environ.get("REDDIT_SUBREDDITS")) # Create subreddit instance for all subreddits bot monitors
 
-req = requests.get(BASE_URL + 'api/card_names')
-card_names_list = json.loads(json.dumps(req.json())) # get every card name and put into a list
+req = requests.get(BASE_URL + 'api/card_names') # Get all card names using requests library
+card_names_list = json.loads(json.dumps(req.json())) # Put fetched card names into a list
 
+
+# Get card info (card text, card type, etc.) by card name using requests module and format into a string
 def format_card_data(card):
     try:
         try:
@@ -52,12 +54,14 @@ def format_card_data(card):
         print(e)
         return None
 
+
+# Create string containing all cards invoked with {CARDNAME} 
 def reply_builder(cards):
     reply = ''
     for i in cards:
         print(i)
-        card_input = ' '.join([word.capitalize() for word in i.split()]) # capitalize first letter of each word to make matching easier
-        closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
+        card_input = ' '.join([word.capitalize() for word in i.split()]) # Capitalize first letter of each word to make matching easier
+        closest = get_close_matches(card_input, card_names_list, 1, 0.7) # Finds card with name closest to input name if exists
         if closest:
             card_name = closest[0]
             reply += "[" + card_name + "](" + BASE_URL + "api/card_image/" + card_name.replace(' ', '+') + ")"
@@ -68,12 +72,14 @@ def reply_builder(cards):
             reply += '\n\n'
     return reply
 
+
+# Create string containing all cards invoked with {{CARDNAME}} as well as each card's expanded info
 def long_reply_builder(cards):
     reply = ''
     for i in cards:
             print(i)
-            card_input = ' '.join([word.capitalize() for word in i.split()]) # capitalize first letter of each word to make matching easier
-            closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
+            card_input = ' '.join([word.capitalize() for word in i.split()]) # Capitalize first letter of each word to make matching easier
+            closest = get_close_matches(card_input, card_names_list, 1, 0.7) # Finds card with name closest to input name if exists
             if closest:
                 card_name = closest[0]
                 reply += "[" + card_name + "](" + BASE_URL + "api/card_image/" + card_name.replace(' ', '+') + ")\n\n"
@@ -92,19 +98,18 @@ def main():
     new_submissions = subreddit.stream.submissions(skip_existing=True, pause_after=-1)
     while True:
         for comment in new_comments:
-            #If the post has been deleted, getting the author will return an error, use a try/except to avoid crashing
+            # If the post has been deleted, getting the author will return an error, use a try/except to avoid crashing
             try:
                 author = comment.author.name
             except Exception:
                 break
-            if comment is None or author == username:  # do not self-reply
+            if comment is None or author == username:  # break out of for loop when None received and do not reply to self
                 break
             cards = re.findall(REGEX, comment.body)  # Find all instances of {CARDNAME}
             long_cards = re.findall(LONG_REGEX, comment.body)  # Find all instances of {{CARDNAME}}
-            reply = ''
-            reply += reply_builder(set(cards))
+            reply = reply_builder(set(cards))
             reply += long_reply_builder(set(long_cards))
-            if reply:  # only reply when any card names are found
+            if reply:  # Only reply when any card names are found
                 try:
                     reply += ABOUT_BOT
                     comment.reply(reply)
@@ -112,13 +117,13 @@ def main():
                     print(str(err))
     
         for submission in new_submissions:
-            if submission is None:
+            if submission is None:  # break out of for loop when None received
                 break
-            cards = re.findall(REGEX, submission.selftext)
+            cards = re.findall(REGEX, submission.selftext)  # Find all instances of {CARDNAME}
             long_cards = re.findall(LONG_REGEX, submission.selftext)  # Find all instances of {{CARDNAME}}
             reply = reply_builder(set(cards))
             reply += long_reply_builder(set(long_cards))
-            if reply:
+            if reply:  # Only reply when any card names are found
                 try:
                     reply += ABOUT_BOT
                     submission.reply(reply)
