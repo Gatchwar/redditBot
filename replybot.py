@@ -33,11 +33,11 @@ def reply_builder(cards):
         card_input = ' '.join([word.capitalize() for word in i.split()]) # capitalize first letter of each word to make matching easier
         closest = get_close_matches(card_input, card_names_list, 1, 0.7) # finds card with name closest to input name if exists
         if closest:
-            card_name = closest[0].split()
-            reply += "[" + ' '.join(card_name) + "](" + BASE_URL + "api/card_image/" + '+'.join(card_name) + ")"
+            card_name = closest[0]
+            reply += "[" + ' '.join(card_name) + "](" + BASE_URL + "api/card_image/" + card_name.replace(' ', '+') + ")"
             reply += ' - '
-            reply += "[(wiki)](" + WIKI_URL + '_'.join(card_name) + ") "
-            reply += "[($)](" + BASE_URL + "card_price?name=" + '+'.join(card_name).replace('&', '%26') + ") "
+            reply += "[(wiki)](" + WIKI_URL + card_name.replace(' ', '_') + ") "
+            reply += "[($)](" + BASE_URL + "card_price?name=" + card_name.replace(' ', '+').replace('&', '%26') + ") "
             reply += "[(MD)](" + MASTER_DUEL_URL + closest[0] + ")"
             reply += '\n\n'
     return reply
@@ -81,4 +81,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
