@@ -61,14 +61,21 @@ def reply_builder(cards, expand):
     for i in cards:
         print(i)
         card_input = ' '.join([word.capitalize() for word in i.split()]) # Capitalize first letter of each word to make matching easier
-        closest = get_close_matches(card_input, card_names_list, 1, 0.7) # Finds card with name closest to input name if exists
-        if closest:
+        closest = get_close_matches(card_input, card_names_list, 1, 0.8) # Finds card with name closest to input name if exists
+        if closest:  # If a card with a full name close enough to the input is found use it
             card_name = closest[0]
+        else:  # If no full card name is close enough maybe they user only typed a portion of the name
+            substring = [card for card in card_names_list if card_input in card]  # Finds card names containing the input name as a substring
+            if substring:  # If the user input is a substring of a full card name
+                card_name = substring[0]
+            else:
+                card_name = '' 
+        if card_name:
             reply += "[" + card_name + "](" + BASE_URL + "api/card_image/" + card_name.replace(' ', '+') + ")"
             reply += ' - '
             reply += "[(wiki)](" + WIKI_URL + card_name.replace(' ', '_') + ") "
             reply += "[($)](" + BASE_URL + "card_price?name=" + card_name.replace(' ', '+').replace('&', '%26') + ") "
-            reply += "[(MD)](" + MASTER_DUEL_URL + closest[0] + ")"
+            reply += "[(MD)](" + MASTER_DUEL_URL + card_name + ")"
             reply += '\n\n'
             if expand:
                 reply += format_card_data(card_name) + '\n\n'
