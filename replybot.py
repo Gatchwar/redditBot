@@ -45,9 +45,9 @@ def format_card_data(card):
                     data = json['data']
                     if data['card_type'] == 'monster':
                         types = data['type'].replace(' ', '').split('/')
-                        text += '{} Monster\n\n{} / {}\n\n{}\n\nAtk: {}'.format(types[1], data['family'].capitalize(), types[0], data['text'].replace('\n\n', ''), data['atk'])
+                        text += '[{} Monster]\n\n[{} / {}]\n\n{}\n\nAtk: {}'.format(types[1], data['family'].capitalize(), types[0], data['text'].replace('\n\n', ''), data['atk'])
                     else:
-                        text += '{} {}\n\n{}'.format(data['property'], data['card_type'].capitalize(), data['text'].replace('\n\n', ' '))
+                        text += '[{} {}]\n\n{}'.format(data['property'], data['card_type'].capitalize(), data['text'].replace('\n\n', ' '))
                 return text 
 
     except Exception as e:
@@ -55,8 +55,8 @@ def format_card_data(card):
         return None
 
 
-# Create string containing all cards invoked with {CARDNAME} 
-def reply_builder(cards):
+# Create string containing all cards invoked with {CARDNAME} (if expand is False) and all cards invoked with {{CARDNAME}} (if expand is True)
+def reply_builder(cards, expand):
     reply = ''
     for i in cards:
         print(i)
@@ -70,25 +70,10 @@ def reply_builder(cards):
             reply += "[($)](" + BASE_URL + "card_price?name=" + card_name.replace(' ', '+').replace('&', '%26') + ") "
             reply += "[(MD)](" + MASTER_DUEL_URL + closest[0] + ")"
             reply += '\n\n'
+            if expand:
+                reply += format_card_data(card_name) + '\n\n'
     return reply
 
-
-# Create string containing all cards invoked with {{CARDNAME}} as well as each card's expanded info
-def long_reply_builder(cards):
-    reply = ''
-    for i in cards:
-            print(i)
-            card_input = ' '.join([word.capitalize() for word in i.split()]) # Capitalize first letter of each word to make matching easier
-            closest = get_close_matches(card_input, card_names_list, 1, 0.7) # Finds card with name closest to input name if exists
-            if closest:
-                card_name = closest[0]
-                reply += "[" + card_name + "](" + BASE_URL + "api/card_image/" + card_name.replace(' ', '+') + ")\n\n"
-                reply += format_card_data(card_name) + '\n\n'
-                reply += "[(wiki)](" + WIKI_URL + card_name.replace(' ', '_') + ") "
-                reply += "[($)](" + BASE_URL + "card_price?name=" + card_name.replace(' ', '+').replace('&', '%26') + ") "
-                reply += "[(MD)](" + MASTER_DUEL_URL + closest[0] + ")"
-                reply += '\n\n'
-    return reply 
 
 def main():
     # subreddit.stream yields new comments/submissions as they are created
@@ -107,8 +92,8 @@ def main():
                 break
             cards = re.findall(REGEX, comment.body)  # Find all instances of {CARDNAME}
             long_cards = re.findall(LONG_REGEX, comment.body)  # Find all instances of {{CARDNAME}}
-            reply = reply_builder(set(cards))
-            reply += long_reply_builder(set(long_cards))
+            reply = reply_builder(set(cards), False)
+            reply += reply_builder(set(long_cards), True)
             if reply:  # Only reply when any card names are found
                 try:
                     reply += ABOUT_BOT
@@ -121,8 +106,8 @@ def main():
                 break
             cards = re.findall(REGEX, submission.selftext)  # Find all instances of {CARDNAME}
             long_cards = re.findall(LONG_REGEX, submission.selftext)  # Find all instances of {{CARDNAME}}
-            reply = reply_builder(set(cards))
-            reply += long_reply_builder(set(long_cards))
+            reply = reply_builder(set(cards), False)
+            reply += reply_builder(set(long_cards), True)
             if reply:  # Only reply when any card names are found
                 try:
                     reply += ABOUT_BOT
