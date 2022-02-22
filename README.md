@@ -1,10 +1,10 @@
 # Reddit Bot for Yu-Gi-Oh cards 
 
-Implemented in Python 3.9 using PRAW 7.5
+A Reddit bot that replies to comments and submissions which include the names of Yugioh cards enclosed by curly brackets. Implemented in Python 3.9 using PRAW 7.5
 
 ## Features
 
-Works on submission bodies as well as comments
+Works on submission bodies as well as comments simultaneously
 
 Matches card names as long as the user input is "close enough" using difflib's get_close_matches function (E.G. {bllue eye wheat dragoon} will output Blue-Eyes White Dragon)
 
@@ -25,13 +25,15 @@ pip install -r requirements.txt
 
 Sign into Reddit using the account you want to use to for the bot
 
-Create a Reddit Application using this link (https://www.reddit.com/prefs/apps/) and following the template below
+Create a Reddit Application using this link (https://www.reddit.com/prefs/apps/) and following the template below:
+
 ![Bot Creation Template](./images/Create_Bot.png)
 
-Note down the CLIENT ID and CLIENT SECRET 
+Note down the CLIENT ID and CLIENT SECRET:
+
 ![Bot Credentials Page](./images/Bot_Credentials.png)
 
-Create a .env file in the same folder and set the required environment variables 
+Create a .env file in the root folder and set the required environment variables 
 ```
 REDDIT_USERNAME="BOT ACCOUNT USERNAME"
 REDDIT_PASSWORD="BOT ACCOUNT PASSWORD"
