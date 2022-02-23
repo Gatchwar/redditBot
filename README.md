@@ -4,17 +4,21 @@ A Reddit bot that replies to comments and submissions which include the names of
 
 ## Features
 
-Works on submission bodies as well as comments simultaneously
+Works on submission bodies as well as comments
 
 Matches card names as long as the user input is "close enough" using difflib's get_close_matches function (E.G. {bllue eye wheat dragoon} will output Blue-Eyes White Dragon)
 
-Handles special characters which are required to fetch certain cards (E.G. {evil twin lilla} will output Evil★Twin_Lil-la)
+Handles special characters which are required to fetch certain cards (E.G. {evil twin lilla} will output Evil★Twin Lil-la)
 
-Matches card names if they are a substring of the full card name (E.G. {garnet} will output Gem-Knight Garnet)
+Matches card names if input is a substring of the full card name (E.G. {garnet} will output Gem-Knight Garnet)
 
 {CARDNAME} outputs links containing an image of the card as well as its wiki article, price data and Master Duel entry
 
-{{CARDNAME}} outputs all of the above as well as full information about the card in text 
+{{CARDNAME}} outputs all of the above as well as full information about the card in text
+
+Does not use external database or text file to store card names or comments
+
+Can be run on a Heroku Dyno using included Procfile and starter.sh bash script
 
 ## Installation
 
