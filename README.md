@@ -37,6 +37,8 @@ Note down the CLIENT ID and CLIENT SECRET:
 
 ![Bot Credentials Page](./images/Bot_Credentials.png)
 
+### Local Setup
+
 Create a .env file in the root folder and set the required environment variables 
 ```
 REDDIT_USERNAME="BOT ACCOUNT USERNAME"
@@ -47,11 +49,50 @@ REDDIT_USER_AGENT="USER_AGENT (a short description of the bot)"
 REDDIT_SUBREDDITS="SUBREDDITS (separated by plus signs E.G. botwatch+test)"
 ```
 
-## Usage
-
+Start the bot locally
 ```
 python .\replybot.py
 ```
+
+### Heroku Setup
+
+Install the Heroku CLI from the link: https://devcenter.heroku.com/articles/getting-started-with-python#set-up
+
+Login to Heroku
+```
+heroku login
+```
+
+Navigate to the repository
+
+Create a Heroku App
+```
+heroku create
+```
+
+Deploy the code 
+```
+git push heroku master
+```
+
+Set the environment variables on Heroku
+```
+heroku config: set REDDIT_USERNAME=<USERNAME>
+heroku config: set REDDIT_PASSWORD=<PASSWORD>
+```
+
+Spin up one instance of the app
+```
+heroku ps:scale worker=1
+```
+
+View the logs to see what the bot is responding to
+```
+heroku logs --tail
+```
+
+## Usage
+
 Go to any of the subreddits entered into the REDDIT_SUBREDDITS field of the .env
 
 Either Comment in a post or create a post with the name of any number of Yu-Gi-Oh cards in either single curly brackets or double curly brackets
