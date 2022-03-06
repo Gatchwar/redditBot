@@ -79,6 +79,7 @@ Set the environment variables on Heroku
 ```
 heroku config: set REDDIT_USERNAME=<USERNAME>
 heroku config: set REDDIT_PASSWORD=<PASSWORD>
+...
 ```
 
 Spin up one instance of the app
