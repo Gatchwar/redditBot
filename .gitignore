@@ -1,5 +1,8 @@
-praw.ini
+# VS Code files
 .vscode
+
+# Local environment variables file
 .env
-done.txt
+
+# Folder of miscellaneous test files and experiments
 /misc
